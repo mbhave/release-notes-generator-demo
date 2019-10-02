@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import com.example.releasenotes.github.payload.Issue;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,10 +17,13 @@ class ReleaseNotesSections {
 
 	private final List<ReleaseNotesSection> sections;
 
-	ReleaseNotesSections() {
+	ReleaseNotesSections(@Value("${releasenotes.sections.titles: New Features,Bug Fixes}") List<String> sectionTitles,
+			@Value("${releasenotes.sections.emojis: :star:,:beetle:}") List<String> sectionEmojis,
+			@Value("${releasenotes.sections.labels: enhancement,regression}") List<String> sectionLabels) {
 		this.sections = new ArrayList<>();
-		add(this.sections, "New Features", ":star:", "enhancement");
-		add(this.sections, "Bug Fixes", ":beetle:", "bug", "regression");
+		for (int i = 0; i < sectionTitles.size(); i++) {
+			add(this.sections, sectionTitles.get(i), sectionEmojis.get(i), sectionLabels.get(i));
+		}
 	}
 
 	private static void add(List<ReleaseNotesSection> sections, String title,
