@@ -18,6 +18,13 @@ class ReleaseNotesSections {
 
 	ReleaseNotesSections() {
 		this.sections = new ArrayList<>();
+		add(this.sections, "New Features", ":star:", "enhancement");
+		add(this.sections, "Bug Fixes", ":beetle:", "bug", "regression");
+	}
+
+	private static void add(List<ReleaseNotesSection> sections, String title,
+			String emoji, String... labels) {
+		sections.add(new ReleaseNotesSection(title, emoji, labels));
 	}
 
 	public Map<ReleaseNotesSection, List<Issue>> collate(List<Issue> issues) {

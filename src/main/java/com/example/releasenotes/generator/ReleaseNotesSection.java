@@ -17,6 +17,10 @@ class ReleaseNotesSection {
 
 	private final List<String> labels;
 
+	ReleaseNotesSection(String title, String emoji, String... labels) {
+		this(title, emoji, Arrays.asList(labels));
+	}
+
 	ReleaseNotesSection(String title, String emoji, List<String> labels) {
 		Assert.hasText(title, "Title must not be empty");
 		Assert.hasText(emoji, "Emoji must not be empty");
