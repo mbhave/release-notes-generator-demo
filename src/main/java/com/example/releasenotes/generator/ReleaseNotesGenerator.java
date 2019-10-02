@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.example.releasenotes.github.payload.Issue;
 import com.example.releasenotes.github.service.GithubService;
+import com.example.releasenotes.properties.ReleaseNotesProperties;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,13 +14,13 @@ public class ReleaseNotesGenerator {
 
 	private final GithubService service;
 
-	@Value("${releasenotes.github.repository:example}")
-	private String organization;
+	private final String organization;
 
 	private final ReleaseNotesSections sections;
 
-	public ReleaseNotesGenerator(GithubService service, ReleaseNotesSections sections) {
+	public ReleaseNotesGenerator(GithubService service, ReleaseNotesProperties properties, ReleaseNotesSections sections) {
 		this.service = service;
+		this.organization = properties.getGithub().getOrganization();
 		this.sections = sections;
 	}
 

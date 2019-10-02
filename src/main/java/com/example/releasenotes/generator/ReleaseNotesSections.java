@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.example.releasenotes.github.payload.Issue;
+import com.example.releasenotes.properties.ReleaseNotesProperties;
+import com.example.releasenotes.properties.ReleaseNotesProperties.Section;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,18 +19,29 @@ class ReleaseNotesSections {
 
 	private final List<ReleaseNotesSection> sections;
 
-	ReleaseNotesSections(@Value("${releasenotes.sections.titles: New Features,Bug Fixes}") List<String> sectionTitles,
-			@Value("${releasenotes.sections.emojis: :star:,:beetle:}") List<String> sectionEmojis,
-			@Value("${releasenotes.sections.labels: enhancement,regression}") List<String> sectionLabels) {
+	ReleaseNotesSections(ReleaseNotesProperties properties) {
 		this.sections = new ArrayList<>();
-		for (int i = 0; i < sectionTitles.size(); i++) {
-			add(this.sections, sectionTitles.get(i), sectionEmojis.get(i), sectionLabels.get(i));
+		addSections(properties.getSections());
+	}
+
+	private void addSections(List<Section> propertySections) {
+		if (propertySections.isEmpty()) {
+			add(this.sections, "New Features", ":star:", "enhancement");
+			add(this.sections, "Bug Fixes", ":beetle:", "bug", "regression");
+			return;
 		}
+		List<ReleaseNotesSection> releaseNotesSections = propertySections.stream().map(this::adapt).collect(Collectors.toList());
+		this.sections.addAll(releaseNotesSections);
 	}
 
 	private static void add(List<ReleaseNotesSection> sections, String title,
 			String emoji, String... labels) {
 		sections.add(new ReleaseNotesSection(title, emoji, labels));
+	}
+
+	private ReleaseNotesSection adapt(Section propertySection) {
+		return new ReleaseNotesSection(propertySection.getTitle(), propertySection.getEmoji(),
+				propertySection.getLabels());
 	}
 
 	public Map<ReleaseNotesSection, List<Issue>> collate(List<Issue> issues) {
