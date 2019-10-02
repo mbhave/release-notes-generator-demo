@@ -1,6 +1,7 @@
 package com.example.releasenotes.generator;
 
 import java.util.List;
+import java.util.Map;
 
 import com.example.releasenotes.github.payload.Issue;
 import com.example.releasenotes.github.service.GithubService;
@@ -14,8 +15,11 @@ public class ReleaseNotesGenerator {
 
 	private final String organization = "spring-projects";
 
-	public ReleaseNotesGenerator(GithubService service) {
+	private final ReleaseNotesSections sections;
+
+	public ReleaseNotesGenerator(GithubService service, ReleaseNotesSections sections) {
 		this.service = service;
+		this.sections = sections;
 	}
 
 	public String generate(String milestone, String repository) {
@@ -35,13 +39,17 @@ public class ReleaseNotesGenerator {
 
 	private String generateContent(List<Issue> issues) {
 		StringBuilder content = new StringBuilder();
-		addIssuesToContent(content, issues);
+		addSectionContent(content, this.sections.collate(issues));
 		return content.toString();
 	}
 
-	private StringBuilder addIssuesToContent(StringBuilder content,
-			List<Issue> issues) {
-		issues.forEach((issue) -> content.append(getFormattedIssue(issue)));
+	private StringBuilder addSectionContent(StringBuilder content,
+			Map<ReleaseNotesSection, List<Issue>> sectionIssues) {
+		sectionIssues.forEach((section, issues) -> {
+			content.append((content.length() != 0) ? "\n" : "");
+			content.append("## " + section + "\n\n");
+			issues.stream().map(this::getFormattedIssue).forEach(content::append);
+		});
 		return content;
 	}
 
