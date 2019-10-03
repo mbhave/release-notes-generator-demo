@@ -21,7 +21,7 @@ public class LoggerHandlerInterceptor implements HandlerInterceptor {
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		String repository = parameterMap.get("repository")[0];
 		String milestone = parameterMap.get("milestone")[0];
-		logger.info("Release notes generation requested for project: " + repository + " for milestone: " + milestone);
+		logger.debug("Release notes generation requested for project: " + repository + " for milestone: " + milestone);
 		return true;
 	}
 
